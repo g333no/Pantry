@@ -27,7 +27,7 @@
  /public/bundles/
  /public/hot
 
-# user uploads (se presenti)
+# user uploads
  /uploads/
  /media/
 
