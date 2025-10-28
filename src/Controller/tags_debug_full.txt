@@ -1,0 +1,70 @@
+Prodotto ID: 49 -> Array
+(
+)
+Prodotto ID: 50 -> Array
+(
+)
+Prodotto ID: 51 -> Array
+(
+)
+Prodotto ID: 52 -> Array
+(
+)
+Prodotto ID: 53 -> Array
+(
+)
+Prodotto ID: 54 -> Array
+(
+)
+Prodotto ID: 55 -> Array
+(
+)
+Prodotto ID: 56 -> Array
+(
+)
+Prodotto ID: 57 -> Array
+(
+)
+Prodotto ID: 58 -> Array
+(
+)
+Prodotto ID: 59 -> Array
+(
+)
+Prodotto ID: 60 -> Array
+(
+    [0] => [{"value":"bio"}
+    [1] => {"value":"scemo"}
+    [2] => {"value":"cacca"}]
+)
+Prodotto ID: 61 -> Array
+(
+    [0] => [{"value":"senza glutine"}]
+)
+Prodotto ID: 64 -> Array
+(
+    [0] => [{"value":"aaa"}
+    [1] => {"value":"uuu"}]
+)
+Prodotto ID: 65 -> Array
+(
+    [0] => [{"value":"ooo"}
+    [1] => {"value":"aaa"}]
+)
+Prodotto ID: 66 -> Array
+(
+    [0] => [{"value":"ddd"}
+    [1] => {"value":"bio"}]
+)
+Prodotto ID: 67 -> Array
+(
+)
+Prodotto ID: 69 -> Array
+(
+    [0] => [{"value":"bio"}]
+)
+Prodotto ID: 70 -> Array
+(
+    [0] => [{"value":"onore"}
+    [1] => {"value":"decade"}]
+)

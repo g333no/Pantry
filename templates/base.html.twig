@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Dispensa{% endblock %}</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+		<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+
+        {% block stylesheets %}
+			<style>
+			.fc-event, 
+			.fc-event * ,
+			.fc-daygrid-event .fc-event-title,     
+			.fc-timegrid-event .fc-event-title,   
+			.fc-list-event .fc-event-title {     
+			  text-shadow:
+				-1px -1px 0 rgba(0,0,0,0.75),
+				 1px -1px 0 rgba(0,0,0,0.75),
+				-1px  1px 0 rgba(0,0,0,0.75),
+				 1px  1px 0 rgba(0,0,0,0.75);
+			  -webkit-font-smoothing: antialiased;
+			  -moz-osx-font-smoothing: grayscale;
+			}
+			
+			.fc-event .fc-event-title .emoji-char {
+				text-shadow: none !important;
+				display: inline-block;
+				line-height: 1;
+				vertical-align: middle;
+			}
+			
+			.color-swatch {
+			  width:32px;
+			  height:22px;
+			  border-radius:6px;
+			  border:1px solid rgba(0,0,0,0.08);
+			  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+			  display: inline-block;
+			}
+			.badge { font-size:0.78rem; }
+			
+			</style>
+		
+		{% endblock %}
+		
+		{{ encore_entry_link_tags('app') }}
+		<style>
+		.palette-inline, #colorPalette {
+		  position: relative !important;
+		  z-index: 99999 !important;
+		  pointer-events: auto !important;
+		}
+
+		.palette-inline .swatch,
+		.palette-inline .gray-swatch,
+		.palette-inline button {
+		  pointer-events: auto !important;
+		}
+
+		.picmo, .picmo-popup, .picmo-picker, .picmo-popup-picker, .picmo__picker {
+		  z-index: 100000 !important;
+		  position: fixed !important;
+		  pointer-events: auto !important;
+		}
+
+		.navbar { z-index: 1000; } 
+		</style>
+
+    </head>
+    <body class="bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div class="container">
+                <a class="navbar-brand" href="{{ path('app_home') }}">Dispensa</a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_prodotto_index') }}">Prodotti</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_scadenze_index') }}">Scadenze</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="" crossorigin="anonymous"></script>
+        {% block javascripts %}{% endblock %}
+		{{ encore_entry_script_tags('app') }}
+		<script src="{{ asset('build/app.js') }}"></script>
+		<script>
+		document.addEventListener('click', function(e){
+		  const btn = e.target.closest('button[data-confirm], a[data-confirm]');
+		  if(!btn) return;
+		  const form = btn.closest('form');
+		  const msg = btn.getAttribute('data-confirm');
+		  if(!msg) return;
+		  e.preventDefault();
+		  if (confirm(msg)) {
+			if (form) form.submit();
+			else {
+			  const href = btn.getAttribute('href');
+			  if (href) window.location = href;
+			}
+		  }
+		});
+		</script>
+
+<script>
+  window.__prodFragmentUrlTemplate = '{{ path("app_prodotto_fragment", {"id": 0}) }}';
+  window.__prodShowUrlTemplate     = '{{ path("app_prodotto_show", {"id": 0}) }}';
+  window.__appBasePath = '{{ app.request.basePath }}';
+</script>
+
+
+<div class="modal fade" id="modalShowProduct" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Dettaglio prodotto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body" id="modalShowProductBody">
+        <div class="text-center py-4">
+          <div class="spinner-border" role="status"><span class="visually-hidden">Caricamento...</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </body>
+</html>

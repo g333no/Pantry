@@ -1,0 +1,45 @@
+# vendor (dependencies installed via Composer)
+ /vendor/
+
+# node modules
+ /node_modules/
+
+# env / local settings 
+ /.env.local
+ /.env.local.php
+ /.env.*.local
+
+# symfony var 
+ /var/
+
+# build files, IDE
+ /build/
+ /.idea/
+ /.vscode/
+ /nbproject/
+ /*.iml
+
+# npm / pnpm debug
+ .pnpm-debug.log
+
+# public: built assets 
+ /public/build/
+ /public/bundles/
+ /public/hot
+
+# user uploads (se presenti)
+ /uploads/
+ /media/
+
+# system files
+ .DS_Store
+ Thumbs.db
+
+# logs
+ *.log
+
+# PHPUnit cache 
+ .phpunit.result.cache
+node_modules
+node_modules
+node_modules

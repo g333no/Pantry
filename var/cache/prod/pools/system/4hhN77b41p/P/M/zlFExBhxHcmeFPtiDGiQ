@@ -1,0 +1,100 @@
+<?php //1e7d3dbe4551248ba30893757f48718a
+
+return [PHP_INT_MAX, static function () { return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
+    $o = [
+        clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['Doctrine\\ORM\\Query\\ParserResult'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Query\\ParserResult')),
+        clone ($p['Doctrine\\ORM\\Query\\Exec\\SingleSelectSqlFinalizer'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Query\\Exec\\SingleSelectSqlFinalizer')),
+        clone ($p['Doctrine\\ORM\\Query\\ResultSetMapping'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Query\\ResultSetMapping')),
+    ],
+    null,
+    [
+        'Doctrine\\ORM\\Query\\ParserResult' => [
+            'sqlFinalizer' => [
+                $o[1],
+            ],
+            'resultSetMapping' => [
+                $o[2],
+            ],
+            'parameterMappings' => [
+                [
+                    'limit' => [
+                        0,
+                    ],
+                    'now' => [
+                        1,
+                    ],
+                ],
+            ],
+        ],
+        'Doctrine\\ORM\\Query\\Exec\\SingleSelectSqlFinalizer' => [
+            'sql' => [
+                1 => 'SELECT s0_.id AS id_0, s0_.quantita AS quantita_1, s0_.scadenza AS scadenza_2, s0_.posizione AS posizione_3, s0_.created_at AS created_at_4, s0_.prodotto_id AS prodotto_id_5 FROM stock_entry s0_ WHERE s0_.scadenza IS NOT NULL AND s0_.scadenza <= ? AND s0_.scadenza >= ? ORDER BY s0_.scadenza ASC',
+            ],
+        ],
+        'stdClass' => [
+            'aliasMap' => [
+                2 => [
+                    's' => 'App\\Entity\\StockEntry',
+                ],
+            ],
+            'fieldMappings' => [
+                2 => [
+                    'id_0' => 'id',
+                    'quantita_1' => 'quantita',
+                    'scadenza_2' => 'scadenza',
+                    'posizione_3' => 'posizione',
+                    'created_at_4' => 'createdAt',
+                ],
+            ],
+            'columnAliasMappings' => [
+                2 => [
+                    'App\\Entity\\StockEntry' => [
+                        's' => [
+                            'id' => 'id_0',
+                            'quantita' => 'quantita_1',
+                            'scadenza' => 'scadenza_2',
+                            'posizione' => 'posizione_3',
+                            'createdAt' => 'created_at_4',
+                        ],
+                    ],
+                ],
+            ],
+            'typeMappings' => [
+                2 => [
+                    'prodotto_id_5' => 'integer',
+                ],
+            ],
+            'entityMappings' => [
+                2 => [
+                    's' => null,
+                ],
+            ],
+            'metaMappings' => [
+                2 => [
+                    'prodotto_id_5' => 'prodotto_id',
+                ],
+            ],
+            'columnOwnerMap' => [
+                2 => [
+                    'id_0' => 's',
+                    'quantita_1' => 's',
+                    'scadenza_2' => 's',
+                    'posizione_3' => 's',
+                    'created_at_4' => 's',
+                    'prodotto_id_5' => 's',
+                ],
+            ],
+            'declaringClasses' => [
+                2 => [
+                    'id_0' => 'App\\Entity\\StockEntry',
+                    'quantita_1' => 'App\\Entity\\StockEntry',
+                    'scadenza_2' => 'App\\Entity\\StockEntry',
+                    'posizione_3' => 'App\\Entity\\StockEntry',
+                    'created_at_4' => 'App\\Entity\\StockEntry',
+                ],
+            ],
+        ],
+    ],
+    $o[0],
+    []
+); }];

@@ -1,0 +1,233 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prodotti{% endblock %}
+
+{% block body %}
+<h1>Prodotti</h1>
+
+
+<form id="sortForm" method="get" class="d-flex align-items-center gap-2 mb-3">
+  <label for="sortSelect" class="form-label mb-0">Ordina per:</label>
+
+  <select id="sortSelect" name="sort" class="form-select form-select-sm" style="width:auto;">
+    <option value="nome"      {{ current_sort == 'nome' ? 'selected' : '' }}>Nome</option>
+    <option value="quantita"  {{ current_sort == 'quantita' ? 'selected' : '' }}>Quantità</option>
+    <option value="createdAt" {{ current_sort == 'createdAt' ? 'selected' : '' }}>Data aggiunta</option>
+    <option value="scadenza"  {{ current_sort == 'scadenza' ? 'selected' : '' }}>Scadenza</option>
+    <option value="categoria" {{ current_sort == 'categoria' ? 'selected' : '' }}>Categoria</option>
+  </select>
+
+  <div class="input-group input-group-sm ms-3" style="width:360px;">
+    <label for="qInput" class="form-label mb-0 me-2">Cerca:</label>
+    <input id="qInput" name="q" type="search" class="form-control form-control-sm" placeholder="Nome, categoria o tag" value="{{ current_q|default('') }}" />
+    <button type="submit" class="btn btn-sm btn-outline-secondary">🔍</button>
+  </div>
+
+
+  <input type="hidden" name="dir" id="dirInput" value="{{ current_dir|default('asc') }}">
+
+  <button type="button" id="toggleDir" class="btn btn-sm btn-outline-secondary" title="Inverti ordine">
+    {% if current_dir|lower == 'desc' %}
+      <i class="bi bi-sort-alpha-down-alt"></i> 🔻
+    {% else %}
+      <i class="bi bi-sort-alpha-down"></i> 🔺
+    {% endif %}
+  </button>
+</form>
+
+<div>
+  <table class="table table-striped align-middle">
+      <thead>
+          <tr>
+              <th style="width:40px;">
+                <input type="checkbox" id="selectAll" title="Seleziona tutti">
+              </th>
+              <th style="width:56px; text-align:center;">Emoji</th>
+              <th>Nome</th>
+              <th style="width:110px;">Quantità</th>
+              <th style="width:160px;">Data di creazione</th>
+              <th style="width:120px;">Scadenza</th>
+              <th style="width:140px;">Categoria</th>
+              <th style="width:120px;">Colore</th>
+              <th>Tag</th>
+              <th class="text-end" style="white-space:nowrap;">Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+      {% for prodotto in prodotti %}
+          <tr>
+              <td>
+                <input type="checkbox" class="select-checkbox" value="{{ prodotto.id }}" aria-label="Seleziona {{ prodotto.nome }}">
+              </td>
+
+              <td style="text-align:center; font-size:20px;">
+                {{ prodotto.emoji is defined and prodotto.emoji ? prodotto.emoji : '—' }}
+              </td>
+
+              <td>{{ prodotto.nome is defined ? prodotto.nome : '' }}</td>
+
+              <td>{{ prodotto.quantita is defined ? prodotto.quantita : 0 }}</td>
+
+              <td>
+                {% if prodotto.createdAt %}
+                  {{ prodotto.createdAt|date('Y-m-d H:i') }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <td>
+                {% if prodotto.scadenza %}
+                  {{ prodotto.scadenza|date('Y-m-d') }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <td>{{ prodotto.categoria is defined ? prodotto.categoria : '' }}</td>
+
+              <td>
+				{% set hex = prodotto.colore is defined and prodotto.colore ? prodotto.colore : '#ffffff' %}
+				<div class="d-flex align-items-center">
+				  <div
+					class="color-swatch"
+					style="background: {{ hex }};"
+					title="{{ hex }}"
+					role="img"
+					aria-label="Colore {{ hex }}">
+				  </div>
+				  <span class="visually-hidden">Colore {{ hex }}</span>
+				</div>
+              </td>
+
+              <td>
+                {% set tags = prodotto.tags is defined ? prodotto.tags : [] %}
+				{% if tags is defined and tags|length > 0 %}
+					{% for tag in tags %}
+						<span class="badge bg-secondary me-1">{{ tag|capitalize }}</span>
+					{% endfor %}
+				{% else %}
+					<span class="text-muted">Nessun tag</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end" style="white-space:nowrap;">
+                <a href="{{ path('app_prodotto_show', {'id': prodotto.id}) }}" class="btn btn-sm btn-outline-primary me-1" title="Mostra">
+                  <i class="bi bi-eye"></i> 🔍
+                </a>
+
+                <a href="{{ path('app_prodotto_edit', {'id': prodotto.id}) }}" class="btn btn-sm btn-outline-secondary me-1" title="Modifica">
+                  <i class="bi bi-pencil"></i> 📝
+                </a>
+
+                <form method="post" action="{{ path('app_prodotto_delete', {'id': prodotto.id}) }}" class="d-inline" style="display:inline;">
+                  <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ prodotto.id) }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Sei sicuro di eliminare '{{ prodotto.nome }}'?">
+                    <i class="bi bi-trash"></i> 💣
+                  </button>
+                </form>
+              </td>
+          </tr>
+      {% else %}
+          <tr>
+              <td colspan="10">Nessun prodotto trovato</td>
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+
+
+<div class="d-flex align-items-center gap-2">
+  <a href="{{ path('app_prodotto_new') }}" class="btn btn-primary">Crea nuovo prodotto</a>
+
+  {% if prodotti|length > 0 %}
+    <form method="post" action="{{ path('app_prodotto_delete_all') }}" style="display:inline;" class="d-inline ms-2">
+      <input type="hidden" name="_token" value="{{ csrf_token('delete_all_products') }}">
+      <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Sei sicuro di eliminare TUTTI i prodotti e le relative stock entry? Questa operazione è irreversibile.">
+        <i class="bi bi-trash-fill"></i> Elimina tutti
+      </button>
+    </form>
+  {% endif %}
+
+  <button id="deleteSelectedBtn" type="button" class="btn btn-sm btn-danger ms-auto" disabled>
+    <i class="bi bi-trash"></i> Elimina selezionati
+  </button>
+</div>
+
+<form id="bulkDeleteForm" method="post" action="{{ path('app_prodotto_delete_selected') }}" style="display:none;">
+  <input type="hidden" name="_token" value="{{ csrf_token('delete_selected_products') }}">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const selectAll = document.getElementById('selectAll');
+  const checkboxes = Array.from(document.querySelectorAll('.select-checkbox'));
+  const deleteBtn = document.getElementById('deleteSelectedBtn');
+  const bulkForm = document.getElementById('bulkDeleteForm');
+
+  function updateState() {
+    const selected = document.querySelectorAll('.select-checkbox:checked').length;
+    deleteBtn.disabled = selected === 0;
+    deleteBtn.dataset.count = selected;
+    deleteBtn.innerHTML = '<i class="bi bi-trash"></i> Elimina selezionati' + (selected ? ' ('+selected+')' : '');
+    if (!selectAll) return;
+    if (selected === 0) selectAll.checked = false;
+    else if (selected === checkboxes.length) { selectAll.checked = true; selectAll.indeterminate = false; }
+    else { selectAll.checked = false; selectAll.indeterminate = true; }
+  }
+
+  updateState();
+
+  if (selectAll) {
+    selectAll.addEventListener('change', function(){
+      const checked = !!this.checked;
+      checkboxes.forEach(cb => { cb.checked = checked; });
+      updateState();
+    });
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateState));
+
+  deleteBtn.addEventListener('click', function(e){
+    const count = parseInt(this.dataset.count || 0, 10);
+    if (count <= 0) return;
+    const msg = `Sei sicuro di eliminare ${count} prodotto${count>1?'i':''}? Questa operazione è irreversibile.`;
+    if (!confirm(msg)) return;
+
+    Array.from(bulkForm.querySelectorAll('input[name="selected_ids[]"]')).forEach(n => n.remove());
+
+    const selectedBoxes = Array.from(document.querySelectorAll('.select-checkbox:checked'));
+    selectedBoxes.forEach(cb => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_ids[]';
+      input.value = cb.value;
+      bulkForm.appendChild(input);
+    });
+
+    bulkForm.submit();
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function(){
+  const sortSelect = document.getElementById('sortSelect');
+  const dirInput = document.getElementById('dirInput');
+  const toggleBtn = document.getElementById('toggleDir');
+  const form = document.getElementById('sortForm');
+
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function(){ form.submit(); });
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function(){
+      const cur = (dirInput.value || 'asc').toLowerCase();
+      dirInput.value = (cur === 'asc') ? 'desc' : 'asc';
+      form.submit();
+    });
+  }
+});
+</script>
+
+{% endblock %}

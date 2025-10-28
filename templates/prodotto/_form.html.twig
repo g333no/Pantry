@@ -1,0 +1,156 @@
+{{ form_start(form, {'attr': {'novalidate':'novalidate', 'class':'needs-validation'}}) }}
+  {{ form_errors(form) }}
+
+  <div class="row g-3">
+    <div class="col-12">
+		<div class="mb-0">
+		  {{ form_label(form.nome, 'Nome') }}
+		  {{ form_widget(form.nome, {
+			  'attr': {
+				'placeholder': 'Es: Latte, Farina, Uova',
+				'class': 'form-control' ~ (form.nome.vars.valid ? '' : ' is-invalid')
+			  }
+		  }) }}
+		  <div class="form-error">
+			{{ form_errors(form.nome) }}
+		  </div>
+		</div>
+    </div>
+
+    <div class="col-12">
+      <div class="row g-2 align-items-center">
+        <div class="col-12 col-md-6">
+			<div class="">
+			  {{ form_label(form.scadenza, 'Scadenza') }}
+			  {{ form_widget(form.scadenza, {
+				  'attr': {
+					'class': 'form-control' ~ (form.scadenza.vars.valid ? '' : ' is-invalid')
+				  }
+			  }) }}
+			  <div class="form-error">
+				{{ form_errors(form.scadenza) }}
+			  </div>
+			</div>
+        </div>
+        <div class="col-6 col-md-2">
+			<div class="">
+			  {{ form_label(form.quantita, 'Quantità') }}
+			  {{ form_widget(form.quantita, {
+				  'attr': {
+					'class': 'form-control' ~ (form.quantita.vars.valid ? '' : ' is-invalid'),
+					'min': '0',
+					'step': '1',
+					'inputmode': 'numeric',
+					'pattern': '\\d*'
+				  }
+			  }) }}
+			  <div class="form-error">
+				{{ form_errors(form.quantita) }}
+			  </div>
+			</div>
+        </div>
+        <div class="col-6 col-md-4 d-none d-md-block"></div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="row g-2">
+        <div class="col-12 col-md-5">
+          <label class="form-label" for="categoriaSelect">Categoria</label>
+
+		{{ form_widget(form.categoria, {'attr': {'id': 'categoriaSelect', 'class': 'form-select'}}) }}
+		<div class="form-error">{{ form_errors(form.categoria) }}</div>
+
+		<div id="categoriaCustomWrap" style="display:none;">
+		  {{ form_widget(form.categoria_custom, {
+			'attr': {'id': 'categoriaCustom', 'class': 'form-control mt-2'},
+			'label': false
+		  }) }}
+		  <div class="form-error">{{ form_errors(form.categoria_custom) }}</div>
+		</div>
+
+          <div class="form-text d-md-none">Seleziona una categoria oppure scegli "Altro" per inserire una nuova categoria.</div>
+        </div>
+
+		<div class="mb-3">
+		  {{ form_label(form.tags_input, 'Tag') }}
+		  {{ form_widget(form.tags_input, {
+			  'attr': { 'class': 'form-control', 'placeholder': 'es: senza glutine, bio, senza lattosio' }
+		  }) }}
+		  <div class="form-text">Separa i tag con una virgola.</div>
+		  <div class="form-error">{{ form_errors(form.tags_input) }}</div>
+		</div>
+
+        <div class="col-12 col-md-7">
+          <label class="form-label d-md-block d-none">Colore & Emoji</label>
+
+          <div class="d-flex align-items-start gap-3">
+            <div class="d-flex flex-column align-items-center">
+              {{ form_widget(form.colore, {'attr': {'id':'colorHidden', 'style':'display:none'}}) }}
+              <button type="button" id="colorPreviewBtn" class="btn p-0" aria-haspopup="true"
+                      style="width:52px;height:52px;border-radius:10px;border:1px solid #ddd;background:{{ form.colore.vars.value ?: '#ffffff' }};">
+              </button>
+			  <div class="form-error">{{ form_errors(form.colore) }}</div>
+              <div class="small mt-2" id="colorName" style="min-width:120px;text-align:center;">
+                {{ form.colore.vars.value ?: 'Bianco' }}
+              </div>
+            </div>
+
+            <div class="d-flex flex-column align-items-center">
+              {{ form_widget(form.emoji, {'attr': {'id':'emojiHidden', 'style':'display:none'}}) }}
+              <button type="button" id="emojiPreviewBtn" class="btn btn-light" style="width:52px;height:52px;border-radius:10px;border:1px solid #ddd;font-size:22px;">
+                {{ form.emoji.vars.value ?: '😀' }}
+              </button>
+			  <div class="form-error">{{ form_errors(form.emoji) }}</div>
+              <div class="small mt-2" id="emojiLabel">{{ form.emoji.vars.value ?: 'Nessuna' }}</div>
+            </div>
+
+            <div class="flex-grow-1 d-flex align-items-center d-none d-md-flex">
+              {# area libera a destra su desktop: possibile testo di aiuto o leave blank #}
+              <div class="form-text">&nbsp;</div>
+            </div>
+          </div>
+
+          <div id="colorPalette" class="card p-3 mt-3" style="display:none; max-width:100%; overflow:auto;">
+            <div id="grayGrid" style="display:grid; grid-template-columns:repeat(32,20px); gap:6px; margin-bottom:10px;"></div>
+            <div id="colorGrid" style="display:grid; gap:6px; grid-template-columns:repeat(32,20px);"></div>
+            <div class="mt-2 d-flex justify-content-end">
+              <button type="button" id="closePalette" class="btn btn-sm btn-outline-primary">Chiudi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">{{ button_label|default('Save') }}</button>
+    <a href="{{ path('app_prodotto_index') }}" class="btn btn-outline-secondary">Annulla</a>
+  </div>
+
+{{ form_end(form) }}
+
+<style>
+  .swatch, .gray-swatch { width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);cursor:pointer;box-sizing:border-box; }
+  .swatch.selected, .gray-swatch.selected { outline:2px solid rgba(0,0,0,0.12); box-shadow:0 0 0 3px rgba(255,255,255,0.4) inset; }
+  @media (max-width:640px) {
+    #colorGrid { grid-template-columns:repeat(16,20px) !important; }
+    #grayGrid { grid-template-columns:repeat(16,20px) !important; }
+  }
+
+  input[type=number].form-control {
+    max-width: 9rem;
+  }
+  
+	.form-error {
+	  color: #b64848;
+	  font-size: .9rem;
+	  margin-top: .25rem;
+	}
+	.is-invalid { border-color: #dc3545 !important; box-shadow: none !important; }
+	.invalid-feedback { display:block; color:#dc3545; font-size:.875rem; margin-top:.25rem; }
+
+	#colorPreviewBtn.is-invalid, #emojiPreviewBtn.is-invalid { outline: 2px solid rgba(220,53,69,0.16); }
+
+</style>

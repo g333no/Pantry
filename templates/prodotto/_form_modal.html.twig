@@ -1,0 +1,11 @@
+{{ form_start(form, {
+    'action': path('app_prodotto_new'),
+    'attr': {'id': 'form_new_prodotto'}
+}) }}
+
+{{ include('prodotto/_form.html.twig', {
+    'form': form,
+    'button_label': button_label|default('Crea')
+}) }}
+
+{{ form_end(form) }}

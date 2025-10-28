@@ -1,0 +1,213 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Scadenze (entro {{ days }} giorni)
+  <hr/>
+  <div class="mt-4">
+    <h4>Impostazioni notifiche</h4>
+    <form method="post" class="row g-2">
+      <div class="col-auto">
+        <label for="notificationEmail" class="form-label mb-0">Email per notifiche</label>
+        <input id="notificationEmail" name="notification_email" type="email" class="form-control form-control-sm" placeholder="es. nome@esempio.com" value="{{ notification_email|default('') }}" />
+      </div>
+      <div class="col-auto align-self-end">
+        <button type="submit" class="btn btn-primary btn-sm">Salva</button>
+      </div>
+    </form>
+    <div class="form-text mt-2">Inserisci l'email alla quale vuoi ricevere le notifiche di scadenza.</div>
+  </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .hero-count {
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      margin-bottom:1rem;
+    }
+	.big-count-number {
+	  font-size: clamp(64px, 10vw, 160px);
+	  font-weight: 900;
+	  line-height: 0.95;
+	  display:inline-flex;
+	  align-items:center;
+	  justify-content:center;
+	  min-width: 120px;
+	  min-height: 120px;
+	  //padding: 0.15rem 0.6rem;
+	  letter-spacing: -1px;
+	  -webkit-font-smoothing:antialiased;
+	  -moz-osx-font-smoothing:grayscale;
+	  text-shadow: 0 2px 0 rgba(255,255,255,0.07), 0 10px 30px rgba(0,0,0,0.12);
+	}
+	@media (max-width:640px) {
+	  .big-count-number {
+		font-size: clamp(48px, 16vw, 96px);
+		min-width: 88px;
+		min-height: 88px;
+	  }
+	}
+
+    .small-metrics { color:#6c757d; }
+    .expiry-badge { padding:.35rem .5rem; border-radius:8px; font-weight:600; }
+    .expiry-badge.expired { background:#e74c3c; color:#fff; }
+    .expiry-badge.soon { background:#f39c12; color:#fff; }
+    .expiry-badge.ok { background:#6bbf59; color:#fff; }
+    .tbl-row-expired { background: rgba(231,76,60,0.06); }
+    .tbl-row-soon { background: rgba(243,156,18,0.04); }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width:1100px; margin:1.2rem auto;">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h4 mb-1">Scadenze (entro {{ days }} giorni)</h1>
+      <div class="small text-muted">Elenco delle stock entry in scadenza. Filtra il range con il controllo sotto.</div>
+    </div>
+
+{% for label, messages in app.flashes %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} alert-dismissible fade show" role="alert">
+      {{ msg|raw }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endfor %}
+
+
+    <div class="text-end hero-count">
+		<div class="big-count-number"
+			 style="color: {{ bigCountTextColor|default('#222') }} !important; line-height:1; -webkit-text-stroke: 0.4px rgba(0,0,0,0.06);">
+		  <span style="color: {{ bigCountColor|default('#333') }};">{{ expiring_next_3_unique_products }}</span>
+		</div>
+
+      <div class="small-metrics">
+        <div class="fw-bold">{{ expiring_next_3_entries }} voci in scadenza (3 giorni)</div>
+        <div class="text-muted">Prodotti distinti in scadenza: <strong>{{ expiring_next_3_unique_products }}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-3 mb-3">
+    <form method="get" class="row gx-2 gy-2 align-items-center">
+      <div class="col-auto">
+        <label for="days" class="form-label mb-0 small">Mostra entro (giorni)</label>
+        <input id="days" name="days" type="number" class="form-control" value="{{ days }}" min="1" style="width:120px" />
+      </div>
+      <div class="col-auto">
+        <label class="form-label mb-0 small">&nbsp;</label>
+        <div><button type="submit" class="btn btn-primary">Aggiorna</button></div>
+      </div>
+
+      <div class="col"></div>
+
+      <div class="col-auto text-end">
+        <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_prodotto_index') }}">Torna ai prodotti</a>
+      </div>
+    </form>
+  </div>
+
+  {% if entries is empty %}
+    <div class="alert alert-info">Nessuna scadenza trovata nei prossimi {{ days }} giorni.</div>
+  {% else %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Prodotto</th>
+            <th>Categoria</th>
+            <th>Tag</th>
+            <th>Quantità</th>
+            <th>Scadenza</th>
+            <th>Gg restanti</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+            {% set daysTo = e.daysTo is defined and e.daysTo is not null ? e.daysTo : 9999 %}
+            {% set rowClass = daysTo < 0 ? 'tbl-row-expired' : (daysTo <= 3 ? 'tbl-row-soon' : '') %}
+            <tr class="{{ rowClass }}">
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div>
+                    <strong>{{ e.prodotto ? (e.prodotto.getNome is defined ? e.prodotto.getNome() : e.prodotto.nome) : '—' }}</strong>
+                    <div class="small text-muted">{{ e.prodotto ? (e.prodotto.getDescrizione is defined ? (e.prodotto.getDescrizione()|striptags|trim|slice(0,80)) : '') : '' }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                {% if e.categoria %}
+                  <span class="badge bg-secondary">{{ e.categoria }}</span>
+                {% else %}
+                  <span class="text-muted">Nessuna Categoria</span>
+                {% endif %}
+              </td>
+
+				<td>
+				  {% set tags = e.tags is defined ? e.tags : [] %}
+				  {% if tags is iterable and tags|length > 0 %}
+					{% for t in tags %}
+					  <span class="badge bg-secondary me-1">{{ t }}</span>
+					{% endfor %}
+				  {% else %}
+					<span class="text-muted">Nessun tag</span>
+				  {% endif %}
+				</td>
+
+              <td>{{ e.quantita is defined ? e.quantita : '—' }}</td>
+              <td>{{ e.scadenza ? e.scadenza : '—' }}</td>
+
+              <td>
+                {% if daysTo < 0 %}
+                  <span class="expiry-badge expired">Scaduto</span>
+                {% elseif daysTo == 0 %}
+                  <span class="expiry-badge soon">Oggi</span>
+                {% elseif daysTo == 1 %}
+                  <span class="expiry-badge soon">1 giorno</span>
+                {% elseif daysTo <= 3 %}
+                  <span class="expiry-badge soon">{{ daysTo }} giorni</span>
+                {% else %}
+                  <span class="expiry-badge ok">{{ daysTo }} giorni</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ path('app_prodotto_show', {'id': e.prodotto ? (e.prodotto.getId ? e.prodotto.getId() : e.prodotto.id) : 0}) }}">Dettaglio</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+
+<hr class="my-4" />
+<div class="mt-4">
+  <h4>Impostazioni notifiche</h4>
+
+  <form method="post" class="row g-2" novalidate>
+    <div class="col-md-6">
+      <label for="notificationEmail" class="form-label mb-0">Email per notifiche</label>
+      <input id="notificationEmail"
+             name="notification_email"
+             type="email"
+             class="form-control form-control-sm"
+             placeholder="es. nome@esempio.com"
+             value="{{ notification_email|default('') }}" />
+    </div>
+
+    <div class="col-auto align-self-end">
+      <button type="submit" class="btn btn-primary btn-sm">Salva</button>
+    </div>
+  </form>
+
+  <div class="form-text mt-2">Inserisci l'email alla quale vuoi ricevere le notifiche di scadenza.</div>
+</div>
+
+{% endblock %}

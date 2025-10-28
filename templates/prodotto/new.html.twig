@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuovo Prodotto{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <h2 class="h4 mb-0 me-auto">Aggiungi prodotto</h2>
+            <a href="{{ path('app_prodotto_index') }}" class="btn btn-link">← Torna alla lista</a>
+          </div>
+
+          {{ include('prodotto/_form.html.twig', {'button_label': 'Crea'}) }}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
